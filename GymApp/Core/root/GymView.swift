@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct GymView: View {
+struct ContentView: View {
     
 @State private var auth=AuthService.shared
     var body: some View {
@@ -27,5 +27,5 @@ struct GymView: View {
 }
 
 #Preview {
-    GymView()
+    ContentView()
 }

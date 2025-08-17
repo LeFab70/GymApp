@@ -8,11 +8,39 @@
 import SwiftUI
 
 struct EditActivity: View {
+    let activity: Activity
+    var db = DataBaseService.shared
+    @Environment(\.dismiss) var dismiss
+    @State private var type: String = ""
+    @State private var minutes: String="0"
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            Form {
+                Section(header: Text("Type")) {
+                    TextField("Type", text: $type)
+                }
+                Section(header: Text("Minutes")) {
+                    TextField("Minutes", text: ($minutes))
+                }
+            }
+            .navigationBarTitle("Edit Activity", displayMode: .inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        db.updateActivity(activity: activity, minutes: Int(minutes) ?? 0, type: type)
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Cancel") {
+                            dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    EditActivity()
+    ActivityView(activity: Activity(id: "1", userId: "1", userName: "1", type: "1", minutes: 1), isOwer: true)
 }
