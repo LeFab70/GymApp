@@ -14,7 +14,7 @@ class Activity :Identifiable{
     let type:String
     let minutes:Int
     let timestamp:TimeInterval
-    init(id: String, userId: String, userName: String, type: String, minutes: Int, timestamp: TimeInterval=Date().timeIntervalSince1970) {
+    init(id: String, userId: String, userName: String, type: String, minutes: Int, timestamp: TimeInterval=Date().timeIntervalSince1970) { //pour fabriquer un objet de type activity
         self.id = id
         self.userId = userId
         self.userName = userName
@@ -23,7 +23,7 @@ class Activity :Identifiable{
         self.timestamp = timestamp
     }
     
-    init?(snapshot:DataSnapshot){
+    init?(snapshot:DataSnapshot){ //pour recuperer les data venant de firebase
         
         guard let dict = snapshot.value as? [String:Any], let userId=dict["userId"] as? String, let userName=dict["userName"] as? String, let type=dict["type"] as? String, let minutes=dict["minutes"] as? Int, let timestamp=dict["timestamp"] as? TimeInterval else {
                 return nil
@@ -36,7 +36,7 @@ class Activity :Identifiable{
         self.timestamp = timestamp
     }
     
-    func toDictionary() -> [String:Any]{
+    func toDictionary() -> [String:Any]{ //pour convertir les data en json avant de les pousser vers firebaseDatabase
         return [
             "id":id,
             "userId":userId,

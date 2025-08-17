@@ -16,20 +16,20 @@ class DataBaseService {
     var activities: [Activity] = []
     //var ranking:[user:String,points:Double]=[]
     
-    private let  ref = Database.database().reference().child("activities")
+    private let  ref = Database.database().reference().child("activities") // pour chercher une key dans realtime db, si plusieurs creer autant de reference
     init() {
-        getActivities( )
+        getActivities( ) //charger les acivites de la bd
      }
     func addActivity(type:String, minutes:Int, user:User){
         let key=ref.childByAutoId().key ?? UUID().uuidString
         let act=Activity(
             id:key,
             userId:user.uid,
-            userName:user.email ?? "",
+            userName:user.email ?? "unknown user",
             type:type,
             minutes:minutes
         )
-        ref.child(key).setValue(act.toDictionary())
+        ref.child(key).setValue(act.toDictionary()) //conversion en json avant de pousser vers firebase
     }
     func getActivities(){
         ref.observe(.value) { snapshot in
