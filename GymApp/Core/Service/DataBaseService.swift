@@ -12,13 +12,14 @@ import FirebaseAuth
 @Observable
 class DataBaseService {
     static let shared = DataBaseService()
-    let SCORE_MULTIPLIER:Double=10
+    private let SCORE_MULTIPLIER:Double=10.0
     var activities: [Activity] = []
-    //var ranking:[user:String,points:Double]=[]
+    var ranking:[(user:String,points:Double)]=[] // garder les points de chaque user
     
     private let  ref = Database.database().reference().child("activities") // pour chercher une key dans realtime db, si plusieurs creer autant de reference
     init() {
         getActivities( ) //charger les acivites de la bd
+        //getRanking()
      }
     func addActivity(type:String, minutes:Int, user:User){
         let key=ref.childByAutoId().key ?? UUID().uuidString
@@ -42,6 +43,7 @@ class DataBaseService {
                            
             }
             self.activities=list.sorted(by: {$0.timestamp > $1.timestamp})
+            self.getRanking()
         }
         
     }
@@ -58,7 +60,8 @@ class DataBaseService {
         for activity in activities{
             totals[activity.userName,default: 0]+=Double(activity.minutes)*SCORE_MULTIPLIER
         }
-        //let sortedArray=totals.sorted{}
+        let sortedArray=totals.sorted {$0.value > $1.value}
+        self.ranking=sortedArray.map {(user:$0.key,points:$0.value)}
         
     }
 }

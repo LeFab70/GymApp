@@ -10,7 +10,7 @@ import SwiftUI
 struct ActivityView: View {
     let activity: Activity
     let isOwer: Bool
-    var onDelete: (() -> Void)?
+    var onDelete: (() -> Void)
     var onEdit: ((Activity) -> Void)?
     @State var showDeleteConfirm: Bool = false
     var body: some View {
@@ -69,7 +69,8 @@ struct ActivityView: View {
     var editButton: some View {
         Button {
             // onEdit
-            onEdit?(activity)
+            print("Edit action triggered")
+            onEdit!(activity)
         } label: {
             Image(systemName: "pencil")
         }
@@ -78,21 +79,21 @@ struct ActivityView: View {
 
     var deleteButton: some View {
         Button {
-           
+            print("Delete action triggered")
             showDeleteConfirm = true
         } label: {
             Image(systemName: "trash")
-                .tint(.red)
+                .foregroundStyle(.red)
          
         }
-        .font(.title3)
+        .buttonStyle(.plain)
         .confirmationDialog(
             "Are you sure you want to delete this activity?",
             isPresented: $showDeleteConfirm,
             titleVisibility: .visible, actions: {
                 Button("Delete", role: .destructive) {
                     // onDelete
-                    onDelete?() // fera appel a la fun definie lors de appel de activityView
+                    onDelete() // fera appel a la fun definie lors de appel de activityView
                 }
                 Button("Cancel", role: .cancel) {} //no action just toogle showDeleteConfirm which is binding
             }
@@ -102,7 +103,7 @@ struct ActivityView: View {
     var actionsButton: some View {
        Group {
             if isOwer {
-                HStack {
+                HStack(spacing:15) {
                     editButton
                     deleteButton
                 }
@@ -113,6 +114,6 @@ struct ActivityView: View {
     
 }
 
-#Preview {
-    ActivityView(activity: Activity(id: "1", userId: "1", userName: "1", type: "1", minutes: 1), isOwer: true, onDelete: nil, onEdit: nil)
-}
+//#Preview {
+   // ActivityView(activity: Activity(id: "1", userId: "1", userName: "1", type: "1", minutes: 1), isOwer: true, onDelete: nil, onEdit: nil)
+//}

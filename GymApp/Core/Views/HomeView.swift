@@ -17,6 +17,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack{
+                RankingView()
                 VStack(spacing:20){
                     welcomeUser
                     addActivityView
@@ -103,9 +104,26 @@ struct HomeView: View {
                     ActivityView(activity: activity, isOwer: activity.userId==currentUser?.uid, onDelete: {
                         db.deleteActivity( activity: activity)
                     }, onEdit: {_ in self.editActivity = activity})
+                    .swipeActions(edge: .trailing) {
+                        if activity.userId == currentUser?.uid {
+                                            Button {
+                                                self.editActivity = activity                 
+                                            } label: {
+                                                Label("Éditer", systemImage: "pencil")
+                                            }
+                                            .tint(.orange)
+
+                                            Button(role: .destructive) {
+                                                db.deleteActivity(activity: activity)
+                                            } label: {
+                                                Label("Supprimer", systemImage: "trash")
+                                            }
+                                        }
+                    }
                 }
             }.listStyle(.plain)
             .listItemTint(Color.clear)
+            
         }
     }
     

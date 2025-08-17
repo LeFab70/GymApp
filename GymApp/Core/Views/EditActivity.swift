@@ -41,6 +41,6 @@ struct EditActivity: View {
     }
 }
 
-#Preview {
-    ActivityView(activity: Activity(id: "1", userId: "1", userName: "1", type: "1", minutes: 1), isOwer: true)
-}
+//#Preview {
+   // ActivityView(activity: Activity(id: "1", userId: "1", userName: "1", type: "1", minutes: 1))
+//}
