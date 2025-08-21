@@ -14,24 +14,36 @@ struct HomeView: View {
     @State private var newType:String=""
     @State private var newMinite:String=""
     @State private var editActivity:Activity?
+    @State private var selectedTab = 0
     var body: some View {
-        NavigationStack {
-            VStack{
-                RankingView()
-                VStack(spacing:20){
-                    welcomeUser
-                    addActivityView
-                }.padding(.horizontal)
-                    .padding(.top,5)
+        NavigationView {
+            VStack(){
+                TabView(selection: $selectedTab) {
+                   
+                    Tab("Add Activity", systemImage: "plus.circle.fill", value: 0) {
+                        tabViewAddActivity
+                    }
+                    Tab("Ranking",systemImage: "list.bullet", value: 1){
+                        RankingView()
+                        ChartViewRanking()
+                    }
+                    .badge(db.ranking.count)
+                    
+                   
+                    Tab("Actitivies",systemImage: "list.bullet.rectangle", value: 2){
+                        //affichage
+                        if db.activities.isEmpty{
+                            listActivityEmpyView
+                        }
+                        else{
+                            //listActivityEmpyView
+                            listActivityView
+                        }
+                    }
+                    .badge(db.activities.count)
+                    
+                }
                 
-                //affichage
-                if db.activities.isEmpty{
-                    listActivityEmpyView
-                }
-                else{
-                    //listActivityEmpyView
-                    listActivityView
-                }
             }
             .navigationTitle(
                 Text("Gym App")
@@ -51,6 +63,18 @@ struct HomeView: View {
     }
     
     //variable pour reduire le content de body
+    
+    var tabViewAddActivity: some View {
+            VStack(spacing: 20) {
+                welcomeUser
+                addActivityView
+            }
+            .padding(.horizontal)
+            .padding(.top, 5)
+    }
+
+    
+    
     var toolBarItemLogOut : some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing){
             Button(action: {
@@ -72,7 +96,20 @@ struct HomeView: View {
     }
     
     var addActivityView : some View {
-        HStack{
+        VStack(alignment: .leading, spacing: 30){
+            HStack(alignment: .center,spacing: 20){
+               Text("Add an activity")
+                   .font(.title)
+                   .fontWeight(.bold)
+                   .foregroundColor(.green.opacity(0.8))
+                   .padding(.bottom, 5)
+                   
+                Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.green.opacity(0.8))
+            }
+            
             TextField("Type", text: $newType)
                 .textFieldStyle(.roundedBorder)
             TextField("Minutes", text: $newMinite)
@@ -89,7 +126,9 @@ struct HomeView: View {
                 Image(systemName: "plus.circle.fill")
                   .font(.title2)
                         .foregroundStyle(.white)
+                       
           }.buttonStyle(.borderedProminent)
+                
                 
         }.padding(.horizontal)
     }
@@ -107,7 +146,7 @@ struct HomeView: View {
                     .swipeActions(edge: .trailing) {
                         if activity.userId == currentUser?.uid {
                                             Button {
-                                                self.editActivity = activity                 
+                                                self.editActivity = activity
                                             } label: {
                                                 Label("Éditer", systemImage: "pencil")
                                             }
