@@ -9,6 +9,9 @@ import Foundation
 import Observation
 import FirebaseDatabase
 import FirebaseAuth
+import UIKit
+import FirebaseStorage
+
 @Observable
 class DataBaseService {
     static let shared = DataBaseService()
@@ -17,6 +20,11 @@ class DataBaseService {
     var ranking:[(user:String,points:Double)]=[] // garder les points de chaque user
     
     private let  ref = Database.database().reference().child("activities") // pour chercher une key dans realtime db, si plusieurs creer autant de reference
+    
+    private let storageRef = Storage.storage().reference() // reference vers le storage
+    var images:[UpdateImage]=[]  //array des images
+    private let dbRef=Database.database().reference() //refence globale vers la base de données
+    
     init() {
         getActivities( ) //charger les acivites de la bd
         //getRanking()
@@ -64,4 +72,64 @@ class DataBaseService {
         self.ranking=sortedArray.map {(user:$0.key,points:$0.value)}
         
     }
+    
+    //storage image
+    func uploadImage(image:UIImage, description:String, completion: @escaping (Result<Void, Error>) -> Void) {
+     //conversion image en jpg
+        guard let imageData=image.jpegData(compressionQuality: 0.8) else {
+            completion(.failure(NSError(domain: "image conversion error", code: 0)))
+            return
+        }
+        let idMage=UUID().uuidString
+        let imageRef = self.storageRef.child("images/\(idMage).jpg")
+        let metadataImage:StorageMetadata = StorageMetadata()
+        metadataImage.contentType = "image/jpeg"
+        
+        imageRef.putData(imageData, metadata: metadataImage) { (metadata, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            imageRef.downloadURL { (url, error) in
+                guard let url = url else {
+                    completion(.failure(NSError(domain: "image url error", code: 0)))
+                    return
+                }
+                self.saveImageInfo(imageId: idMage, description: description, url: url)
+                completion(.success(()))
+            }
+        }
+        
+        
+     
+    }
+    //envoie la data dans la realtime data base
+    func saveImageInfo(imageId:String, description:String,url:URL){
+        let data:[String:Any]=["imageId":imageId,"description":description,"url":url.absoluteString]
+        dbRef.child("images").child(imageId).setValue(data)
+    }
+    
+    //fonction pour afficher all les images depuis realtime database
+    func getAllImages(completion: @escaping ([UpdateImage]) -> Void){
+       
+//        dbRef.child("images").observe(.value) { (snapshot) in
+//            var fetchedImages:[UpdateImage]=[]
+//            for child in snapshot.children{
+//                if let snapshot=child as? DataSnapshot,
+//                   let value=snapshot.value as? [String:Any],
+//                   
+//                
+//                    
+//                
+//                
+//                let imageId=child.key
+//                let description=value["description"] as! String
+//                let urlString=value["url"] as! String
+//            }
+//            self.images=fetchedImages
+//        }
+        
+        
+    }
+    
 }
