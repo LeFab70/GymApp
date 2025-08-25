@@ -33,15 +33,41 @@ struct ActivityView: View {
     }
     
     var iconActivity: some View {
-        Circle()
-            .fill(.green.gradient)
-            .frame(width: 35, height: 35)
-            .overlay(
-                Image(systemName: "figure.run")
-                    .font(.title)
-                    .foregroundColor(.white)
-            )
+        Group {
+            if let urlString = activity.imageUrl,
+               let url = URL(string: urlString) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 35, height: 35)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 35, height: 35)
+                            .clipShape(Circle())
+                    case .failure:
+                        Image(systemName: "exclamationmark.triangle")
+                            .frame(width: 35, height: 35)
+                            .foregroundColor(.red)
+                    @unknown default:
+                        EmptyView()
+                    }
+                }
+            } else {
+                Circle()
+                    .fill(.green.gradient)
+                    .frame(width: 35, height: 35)
+                    .overlay(
+                        Image(systemName: "figure.run")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                    )
+            }
+        }
     }
+
     
     var activityDescription: some View {
         HStack{Text(activity.type)

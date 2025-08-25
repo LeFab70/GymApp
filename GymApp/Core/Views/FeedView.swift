@@ -58,7 +58,7 @@ struct FeedView: View {
         firebaseService.uploadImage(image: selectedImage,description: description) { result in
             isLoading = false
             switch result {
-            case .success(let message):
+            case .success:
                 updateStatus = "Updated successfully"
                 self.description=""
                 self.selectedImage=nil

@@ -11,18 +11,18 @@ struct ContentView: View {
     
 @State private var auth=AuthService.shared
     var body: some View {
-//       Group
-//        {
-//            if let user = auth.user
-//            {
-//                HomeView(currentUser: user)
-//                
-//            }
-//            else {
-//                AuthGateView()
-//            }
-//        }
-        FeedView()
+       Group
+        {
+            if let user = auth.user
+            {
+                HomeView(currentUser: user)
+                
+            }
+            else {
+                AuthGateView()
+            }
+        }
+//        FeedView()
        
     }
 }
