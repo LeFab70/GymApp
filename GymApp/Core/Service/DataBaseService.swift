@@ -18,6 +18,7 @@ class DataBaseService {
     private let SCORE_MULTIPLIER:Double=10.0
     var activities: [Activity] = []
     var ranking:[(user:String,points:Double)]=[] // garder les points de chaque user
+    var uploaded:UpdateImage?
     
     private let  ref = Database.database().reference().child("activities") // pour chercher une key dans realtime db, si plusieurs creer autant de reference
     
@@ -154,14 +155,33 @@ class DataBaseService {
                     completion(.failure(NSError(domain: "image url error", code: 0)))
                     return
                 }
+                //ajouter description venant de ia
+                if description.isEmpty {
+                    AnalyseImage.shared.reconizeObject(image:image){
+                        desc in
+                        let descriptionText=desc?.joined(separator: " , ") ?? "Image sans description"
+                        print(descriptionText)
+                        //description=descriptionText
+                        self.uploaded = UpdateImage(
+                            id: idMage,
+                            url: url.absoluteString,
+                            description: descriptionText
+                          
+                        )
+                    }
+                }
+                //Description venant de user
+                else{
+                    self.uploaded = UpdateImage(
+                        id: idMage,
+                        url: url.absoluteString,
+                        description: description
+                      
+                    )
+                }
                 
-                let uploaded = UpdateImage(
-                    id: idMage,
-                    url: url.absoluteString,
-                    description: description
-                  
-                )
-                completion(.success(uploaded))
+               
+                completion(.success(self.uploaded!))
             }
         }
     }

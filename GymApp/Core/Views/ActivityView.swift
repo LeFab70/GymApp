@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct ActivityView: View {
     let activity: Activity
     let isOwer: Bool
     var onDelete: (() -> Void)
     var onEdit: ((Activity) -> Void)?
+    let  synthesizer=AVSpeechSynthesizer()
     @State var showDeleteConfirm: Bool = false
     var body: some View {
         HStack {
@@ -31,6 +33,24 @@ struct ActivityView: View {
             }
         }
     }
+    
+    //speaker
+//    func speak(text:String){
+//        let sythezise=AVSpeechSynthesizer()
+//        let utterance=AVSpeechUtterance(string: text)
+//        utterance.voice=AVSpeechSynthesisVoice(language: "en-CA")
+//        sythezise.speak(utterance)
+//    }
+//
+    
+    func speak(text: String) {
+            let utterance = AVSpeechUtterance(string: text)
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-CA")
+            utterance.rate = 0.5 // vitesse de lecture (0.0 à 1.0)
+            utterance.pitchMultiplier = 1.0 // tonalité
+            utterance.volume = 1.0 // volume (0.0 à 1.0)
+            synthesizer.speak(utterance)
+        }
     
     var iconActivity: some View {
         Group {
@@ -85,10 +105,22 @@ struct ActivityView: View {
             Text("\(activity.minutes) minutes")
                 .foregroundColor(.secondary)
                 .font(.subheadline)
-               
+            
             Text(activity.userName)
                 .foregroundColor(.secondary)
                 .font(.caption)
+            
+            HStack{
+                Text("\(activity.imageDescription ?? "") description")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+                Button(action: {speak(text: activity.imageDescription ?? "Inconnue")})
+                { Image(systemName: "speaker.wave.2.circle")
+                        .font(.title2)
+                }
+                .buttonStyle(.plain)
+                
+            }
         }
     }
   
@@ -96,7 +128,7 @@ struct ActivityView: View {
         Button {
             // onEdit
             print("Edit action triggered")
-            onEdit!(activity)
+            onEdit?(activity)
         } label: {
             Image(systemName: "pencil")
         }

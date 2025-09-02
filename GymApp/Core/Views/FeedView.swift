@@ -67,6 +67,12 @@ struct FeedView: View {
             }
         }
     }
+//    func speak(text: String) {
+//        let systemVoice = AvSpeechSynthesizer()
+//        let utterance = AvSpeechUtterance(string: text)
+//        utterance.voice
+//        
+//    }
 }
 
 #Preview {

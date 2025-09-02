@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var showImagePicker: Bool = false
     @State private var isLoading: Bool = false
     @State private var updateStatus: String?
+    @State private var newDescription:String=""
     var body: some View {
         NavigationView {
             VStack(){
@@ -117,13 +118,23 @@ struct HomeView: View {
             TextField("Type", text: $newType)
                 .textFieldStyle(.roundedBorder) //prendre ceci  comme description
             
-            TextField("Minutes", text: $newMinite)
-                .keyboardType(.numberPad)
-                .textFieldStyle(.roundedBorder)
-                .frame(width: 100)
-                .onChange(of: newMinite) {
-                    newMinite = newMinite.filter { ("0"..."9").contains($0) }
-                }
+            HStack(spacing: 20) {
+                TextField("Minutes", text: $newMinite)
+                    .keyboardType(.numberPad)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 100)
+                    .onChange(of: newMinite) {
+                        newMinite = newMinite.filter { ("0"..."9").contains($0) }
+                    }
+                Spacer()
+                TextField("Description Image", text: $newDescription)
+                    .keyboardType(.numberPad)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 200)
+                    .onChange(of: newMinite) {
+                        newMinite = newMinite.filter { ("0"..."9").contains($0) }
+                    }
+            }
             HStack(alignment: .center, spacing: 15) {
                 buttonAddImageView
                 Spacer()
@@ -187,8 +198,6 @@ struct HomeView: View {
         //isOwer  permet de display ou non les buttons delete et edit selon a qui apprtient l'activity
         List{
             ForEach(db.activities){activity in
-                HStack{
-                    
                     ActivityView(activity: activity, isOwer: activity.userId==currentUser?.uid, onDelete: {
                         db.deleteActivity( activity: activity)
                     }, onEdit: {_ in self.editActivity = activity})
@@ -208,7 +217,7 @@ struct HomeView: View {
                             }
                         }
                     }
-                }
+                
             }.listStyle(.plain)
                 .listItemTint(Color.clear)
             
@@ -232,10 +241,11 @@ struct HomeView: View {
                 //uploadImage() //charger image dans storage fait
                // lors de la save activity
                 //save activitye avec image liée
-                db.addActivity(type: newType, minutes: minite, user: user,image: selectedImage,description: newType)
+                db.addActivity(type: newType, minutes: minite, user: user,image: selectedImage,description: newDescription)
                 isLoading = false
                 newType=""
                 newMinite=""
+                newDescription=""
                 selectedImage=nil
                 isLoading=false
             }
